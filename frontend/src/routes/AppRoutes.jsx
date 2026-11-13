@@ -7,6 +7,8 @@ import VerificationRequest from "../pages/dealer/VerificationRequest";
 import VerifyDealers from "../pages/admin/VerifyDealers";
 import ManageUsers from "../pages/admin/ManageUsers";
 import HomePage from "../pages/farmer/HomePage";
+import Footer from "../components/common/Footer";
+import Header from "../components/common/Header";
 
 const Placeholder = ({ title }) => (
   <div className="page">
@@ -17,6 +19,8 @@ const Placeholder = ({ title }) => (
 
 export default function AppRoutes() {
   return (
+    <>
+    <Header />
     <main className="bg-gray-100">
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
@@ -51,5 +55,7 @@ export default function AppRoutes() {
         <Route path="*" element={<Placeholder title="Page not found" />} />
       </Routes>
     </main>
+    <Footer />
+    </>
   );
 }
