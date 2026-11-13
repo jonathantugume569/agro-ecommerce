@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { getAdminVerifications, reviewVerification } from "../../api/dealersApi";
-import { getErrorMessage } from "../../utils/apiErrors";
-import { formatDate } from "../../utils/formatDate";
-import "../../styles/accounts.css";
+import { getAdminVerifications, reviewVerification } from "../../utils/requests";
+import { getErrorMessage, formatDate } from "../../utils/formatters";
 
 const TABS = [
   { value: "pending", label: "Pending" },

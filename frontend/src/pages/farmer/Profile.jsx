@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getProfile, updateProfile } from "../../api/dealersApi";
-import FormField from "../../components/common/FormField";
-import VerifiedBadge from "../../components/dealers/VerifiedBadge";
-import useAuth from "../../hooks/useAuth";
-import { getErrorMessage, getFieldErrors } from "../../utils/apiErrors";
-import { formatDate } from "../../utils/formatDate";
-import "../../styles/accounts.css";
+import { getProfile, updateProfile } from "../../utils/requests";
+import { useAuth } from "../../context/AuthContext";
+import { getErrorMessage, getFieldErrors, formatDate } from "../../utils/formatters";
 
 const FARMER_FIELDS = ["location", "district", "farm_size_acres", "main_crops"];
 const DEALER_FIELDS = ["business_name", "license_number", "location", "district", "description"];
@@ -105,7 +101,7 @@ export default function Profile() {
           <h2>Verification</h2>
           {profile.is_verified ? (
             <p>
-              <VerifiedBadge verified /> Verified on {formatDate(profile.verified_at)}. Farmers can
+              <span className="pill pill-approved">Verified</span> Verified on {formatDate(profile.verified_at)}. Farmers can
               see your verified badge on your listings.
             </p>
           ) : (
@@ -127,33 +123,59 @@ export default function Profile() {
           <div className="form-grid">
             {isDealer && (
               <>
-                <FormField label="Business name" name="business_name" value={form.business_name ?? ""}
-                  onChange={handleChange} error={fieldErrors.business_name} required />
-                <FormField label="Licence number" name="license_number" value={form.license_number ?? ""}
-                  disabled hint="Contact an admin to change your licence number." />
+                <div className={`form-field${fieldErrors.business_name ? " has-error" : ""}`}>
+                  <label htmlFor="business_name">Business name</label>
+                  <input className="input outlined" id="business_name" name="business_name"
+                    value={form.business_name ?? ""} onChange={handleChange} required />
+                  {fieldErrors.business_name && <small className="field-error">{fieldErrors.business_name}</small>}
+                </div>
+                <div className="form-field">
+                  <label htmlFor="license_number">Licence number</label>
+                  <input className="input outlined" id="license_number" name="license_number"
+                    value={form.license_number ?? ""} disabled />
+                  <small className="hint">Contact an admin to change your licence number.</small>
+                </div>
               </>
             )}
 
-            <FormField label="Location / village" name="location" value={form.location ?? ""}
-              onChange={handleChange} error={fieldErrors.location} />
-            <FormField label="District" name="district" value={form.district ?? ""}
-              onChange={handleChange} error={fieldErrors.district} />
+            <div className={`form-field${fieldErrors.location ? " has-error" : ""}`}>
+              <label htmlFor="location">Location / village</label>
+              <input className="input outlined" id="location" name="location" value={form.location ?? ""}
+                onChange={handleChange} />
+              {fieldErrors.location && <small className="field-error">{fieldErrors.location}</small>}
+            </div>
+            <div className={`form-field${fieldErrors.district ? " has-error" : ""}`}>
+              <label htmlFor="district">District</label>
+              <input className="input outlined" id="district" name="district" value={form.district ?? ""}
+                onChange={handleChange} />
+              {fieldErrors.district && <small className="field-error">{fieldErrors.district}</small>}
+            </div>
 
             {isFarmer && (
               <>
-                <FormField label="Farm size (acres)" name="farm_size_acres" type="number"
-                  min="0" step="0.01" value={form.farm_size_acres ?? ""}
-                  onChange={handleChange} error={fieldErrors.farm_size_acres} />
-                <FormField label="Main crops" name="main_crops" value={form.main_crops ?? ""}
-                  onChange={handleChange} error={fieldErrors.main_crops}
-                  placeholder="Maize, beans, coffee" />
+                <div className={`form-field${fieldErrors.farm_size_acres ? " has-error" : ""}`}>
+                  <label htmlFor="farm_size_acres">Farm size (acres)</label>
+                  <input className="input outlined" id="farm_size_acres" name="farm_size_acres" type="number"
+                    min="0" step="0.01" value={form.farm_size_acres ?? ""} onChange={handleChange} />
+                  {fieldErrors.farm_size_acres && <small className="field-error">{fieldErrors.farm_size_acres}</small>}
+                </div>
+                <div className={`form-field${fieldErrors.main_crops ? " has-error" : ""}`}>
+                  <label htmlFor="main_crops">Main crops</label>
+                  <input className="input outlined" id="main_crops" name="main_crops" value={form.main_crops ?? ""}
+                    onChange={handleChange} placeholder="Maize, beans, coffee" />
+                  {fieldErrors.main_crops && <small className="field-error">{fieldErrors.main_crops}</small>}
+                </div>
               </>
             )}
           </div>
 
           {isDealer && (
-            <FormField as="textarea" rows={4} label="About your business" name="description"
-              value={form.description ?? ""} onChange={handleChange} error={fieldErrors.description} />
+            <div className={`form-field${fieldErrors.description ? " has-error" : ""}`}>
+              <label htmlFor="description">About your business</label>
+              <textarea className="input outlined" id="description" name="description" rows={4}
+                value={form.description ?? ""} onChange={handleChange} />
+              {fieldErrors.description && <small className="field-error">{fieldErrors.description}</small>}
+            </div>
           )}
 
           <button className="btn btn-primary" type="submit" disabled={saving}>

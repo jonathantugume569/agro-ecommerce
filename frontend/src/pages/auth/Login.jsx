@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
-import FormField from "../../components/common/FormField";
-import useAuth from "../../hooks/useAuth";
-import { getErrorMessage } from "../../utils/apiErrors";
+import { useAuth } from "../../context/AuthContext";
+import { getErrorMessage } from "../../utils/formatters";
 import { homePathForRole } from "../../utils/roles";
-import "../../styles/accounts.css";
 
 export default function Login() {
   const { login, isAuthenticated, user } = useAuth();
@@ -33,44 +31,63 @@ export default function Login() {
       await login(form.username.trim(), form.password);
       // The redirect happens above, once the user is set.
     } catch (err) {
-      setError(getErrorMessage(err, "Login failed. Check your username and password."));
+      setError(
+        getErrorMessage(err, "Login failed. Check your username and password."),
+      );
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="auth-page">
-      <form className="card auth-card" onSubmit={handleSubmit}>
-        <h1>Welcome back</h1>
-        <p className="muted">Sign in to buy or sell farm inputs.</p>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <form className="card min-w-lg" onSubmit={handleSubmit}>
+        <h1 className="border-b border-gray-200 pb-4 text-center">
+          Welcome back
+        </h1>
 
         {error && <div className="alert alert-error">{error}</div>}
 
-        <FormField
-          label="Username"
-          name="username"
-          value={form.username}
-          onChange={handleChange}
-          autoComplete="username"
-          required
-        />
-        <FormField
-          label="Password"
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          autoComplete="current-password"
-          required
-        />
+        <div className="flex flex-col mt-4">
+          <div className="form-field">
+            <label htmlFor="username">Username</label>
+            <input
+              className="input outlined"
+              id="username"
+              name="username"
+              value={form.username}
+              onChange={handleChange}
+              autoComplete="username"
+              required
+            />
+          </div>
+          <div className="form-field">
+            <label htmlFor="password">Password</label>
+            <input
+              className="input outlined"
+              id="password"
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              autoComplete="current-password"
+              required
+            />
+          </div>
+        </div>
 
-        <button className="btn btn-primary btn-block" type="submit" disabled={submitting}>
-          {submitting ? "Signing in..." : "Sign in"}
-        </button>
+        <div className="flex flex-col gap-2 mt-4">
+          <button
+            className="btn primary btn-block"
+            type="submit"
+            disabled={submitting}
+          >
+            {submitting ? "Signing in..." : "Sign in"}
+          </button>
 
-        <p className="auth-switch">
-          New here? <Link to="/register">Create an account</Link>
-        </p>
+          <p className="auth-switch">
+            New here? <Link to="/register" className="link underline">Create an account</Link>
+          </p>
+        </div>
       </form>
     </div>
   );

@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { useAuth } from "../context/AuthContext";
 
 // Usage A (wrapper):  <ProtectedRoute><Page /></ProtectedRoute>
 // Usage B (layout):   <Route element={<ProtectedRoute />}> ...child routes... </Route>
