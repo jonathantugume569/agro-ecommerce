@@ -5,6 +5,8 @@ import {
   RepeatIcon,
   StarIcon,
 } from "@phosphor-icons/react";
+import { useAppContext } from "../../context/AppContext";
+import { SeedDetails } from "./ProductDetail";
 
 function HomePage() {
   const categories = [
@@ -189,6 +191,8 @@ function HomePage() {
   const [brokerSort, setBrokerSort] = useState("");
   const [selectedBroker, setSelectedBroker] = useState(null);
   const [visibleSeedCount, setVisibleSeedCount] = useState(8);
+
+  const { openModal } = useAppContext();
 
   // Sync category card click & seed dropdown
   const handleCategorySelect = (categoryName) => {
@@ -400,9 +404,11 @@ function HomePage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {visibleSeeds.length > 0 ? (
             visibleSeeds.map((seed) => (
-              <div
+              <button
                 key={seed.id}
-                className="bg-white border border-gray-300 rounded-lg"
+                type="button"
+                onClick={() => openModal(<SeedDetails seed={seed} />, "Seed Details", null)}
+                className="bg-white border border-gray-300 rounded-lg text-left transition hover:-translate-y-0.5 hover:shadow-md"
               >
                 <img
                   src={seed.img}
@@ -415,16 +421,18 @@ function HomePage() {
                     UGX {seed.price.toLocaleString()}
                   </p>
                   {/* A line height of 2 lines */}
-                  <p className="text-sm text-gray-600 line-clamp-2">
+                  {/* <p className="text-sm text-gray-600 line-clamp-2">
                     {seed.description}
-                  </p>
+                  </p> */}
 
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between mt-2 pt-2 border-t border-gray-300">
-                    <p className="text-sm text-gray-600 line-clamp-1">{seed.broker}</p>
+                    <p className="text-sm text-gray-600 line-clamp-1">
+                      {seed.broker}
+                    </p>
                     <p className="text-sm text-gray-600">Stock: {seed.stock}</p>
                   </div>
                 </div>
-              </div>
+              </button>
             ))
           ) : (
             <p className="text-sm text-gray-600 col-span-full">
