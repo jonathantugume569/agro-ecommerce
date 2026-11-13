@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 import { getErrorMessage, getFieldErrors } from "../../utils/formatters";
 import { homePathForRole } from "../../utils/roles";
@@ -22,7 +23,6 @@ export default function Register() {
 
   const [role, setRole] = useState("farmer");
   const [form, setForm] = useState(INITIAL);
-  const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [justRegistered, setJustRegistered] = useState(false);
@@ -46,11 +46,12 @@ export default function Register() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setError("");
     setFieldErrors({});
 
     if (form.password !== form.confirmPassword) {
-      setFieldErrors({ confirmPassword: "Passwords do not match." });
+      const msg = "Passwords do not match.";
+      setFieldErrors({ confirmPassword: msg });
+      toast.error(msg);
       return;
     }
 
@@ -69,12 +70,15 @@ export default function Register() {
     }
 
     setSubmitting(true);
+    const toastId = toast.loading("Creating your account...");
+
     try {
       await register(payload);
     } catch (err) {
       setFieldErrors(getFieldErrors(err));
-      setError(
+      toast.error(
         getErrorMessage(err, "Registration failed. Please check the form."),
+        { id: toastId }
       );
       setSubmitting(false);
       return;
@@ -84,7 +88,16 @@ export default function Register() {
     try {
       setJustRegistered(true);
       await login(payload.username, payload.password);
+      toast.success(
+        isDealer
+          ? "Account created! Please complete your dealer verification."
+          : "Account created! Welcome to AgroEcom.",
+        { id: toastId }
+      );
     } catch {
+      toast.info("Account created! Please sign in to continue.", {
+        id: toastId,
+      });
       navigate("/login", { replace: true });
     }
   }
@@ -116,8 +129,6 @@ export default function Register() {
             I am an Agro Dealer
           </button>
         </div>
-
-        {error && <div className="alert alert-error">{error}</div>}
 
         <div className="flex flex-col my-4">
           <div

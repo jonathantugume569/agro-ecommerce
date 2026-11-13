@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 import { getErrorMessage } from "../../utils/formatters";
 import { homePathForRole } from "../../utils/roles";
@@ -9,7 +10,6 @@ export default function Login() {
   const location = useLocation();
 
   const [form, setForm] = useState({ username: "", password: "" });
-  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   // Already logged in (or just logged in): go back where the user came from, or to their home.
@@ -25,14 +25,16 @@ export default function Login() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setError("");
+    const username = form.username.trim();
+    if (!username || !form.password) return;
+
     setSubmitting(true);
     try {
-      await login(form.username.trim(), form.password);
-      // The redirect happens above, once the user is set.
+      await login(username, form.password);
+      toast.success(`Welcome back, ${username}!`);
     } catch (err) {
-      setError(
-        getErrorMessage(err, "Login failed. Check your username and password."),
+      toast.error(
+        getErrorMessage(err, "Login failed. Check your username and password.")
       );
       setSubmitting(false);
     }
@@ -44,8 +46,6 @@ export default function Login() {
         <h1 className="border-b border-gray-200 pb-4 text-center">
           Welcome back
         </h1>
-
-        {error && <div className="alert alert-error">{error}</div>}
 
         <div className="flex flex-col mt-4">
           <div className="form-field">
@@ -85,7 +85,10 @@ export default function Login() {
           </button>
 
           <p className="auth-switch">
-            New here? <Link to="/register" className="link underline">Create an account</Link>
+            New here?{" "}
+            <Link to="/register" className="link underline">
+              Create an account
+            </Link>
           </p>
         </div>
       </form>
