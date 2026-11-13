@@ -91,7 +91,7 @@ export default function Register() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <form className="card min-w-lg" onSubmit={handleSubmit}>
+      <form className="card w-full max-w-lg" onSubmit={handleSubmit}>
         <h1 className="border-b border-gray-200 pb-4 text-center">
           Create your account
         </h1>

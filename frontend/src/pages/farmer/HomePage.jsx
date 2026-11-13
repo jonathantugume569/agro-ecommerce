@@ -254,7 +254,7 @@ function HomePage() {
 
   return (
     <section className="page">
-      <div className="rounded-lg bg-emerald-900 text-white p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="rounded-lg bg-emerald-950 text-white p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-300">
             <PlantIcon size={16} weight="fill" />
@@ -410,16 +410,17 @@ function HomePage() {
                   className="h-48 rounded-t-lg object-cover"
                 />
                 <div className="flex flex-col p-4">
-                  <p className="font-semibold">{seed.name}</p>
+                  <p className="font-semibold h-[2lh] md:h-auto">{seed.name}</p>
                   <p className="text-sm text-emerald-600 font-bold text-xl mt-2">
                     UGX {seed.price.toLocaleString()}
                   </p>
+                  {/* A line height of 2 lines */}
                   <p className="text-sm text-gray-600 line-clamp-2">
                     {seed.description}
                   </p>
 
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-300">
-                    <p className="text-sm text-gray-600">{seed.broker}</p>
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between mt-2 pt-2 border-t border-gray-300">
+                    <p className="text-sm text-gray-600 line-clamp-1">{seed.broker}</p>
                     <p className="text-sm text-gray-600">Stock: {seed.stock}</p>
                   </div>
                 </div>

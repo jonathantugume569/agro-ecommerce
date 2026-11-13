@@ -15,7 +15,7 @@ const socialLinks = [
 
 function Footer() {
   return (
-    <footer className="bg-emerald-900 px-6 py-10 text-white">
+    <footer className="bg-emerald-950 px-6 py-10 text-white">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 md:grid-cols-3">
         <section>
           <Link to="/products" className="text-2xl font-bold tracking-tight text-white">

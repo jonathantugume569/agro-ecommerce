@@ -7,7 +7,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 function Header() {
@@ -34,10 +34,11 @@ function Header() {
   ];
 
   return (
-    <header className="relative z-20 border-b border-emerald-800 bg-emerald-900 text-white h-20">
+    <header className="relative z-20 border-b border-emerald-800 bg-emerald-950 text-white h-20">
       <div className="mx-auto flex items-center justify-between gap-4 px-4 md:px-16 lg:px-32 py-3 h-20">
         <Link
           className="text-xl font-bold tracking-tight text-white"
+          style={{ fontFamily: "Playfair Display, serif" }}
           to="/products"
           onClick={closeDrawer}
         >
@@ -46,7 +47,13 @@ function Header() {
             alt="AgroEcom Logo"
             className="inline-block h-8 w-8 rounded-full mr-2"
           />
-          <span className="text-emerald-400">Agro</span>Ecom
+          <span
+            className="text-emerald-400"
+            style={{ fontFamily: "Playfair Display, serif" }}
+          >
+            Agro
+          </span>
+          Ecom
         </Link>
 
         <nav
@@ -54,23 +61,33 @@ function Header() {
           aria-label="Main navigation"
         >
           {links.map((link) => (
-            <Link
+            <NavLink
               key={link.to}
-              className="flex items-center gap-2 text-sm text-emerald-50 transition hover:text-white"
               to={link.to}
+              className={({ isActive }) =>
+                `flex items-center gap-2 text-sm text-emerald-50 transition hover:text-white ${
+                  isActive ? "font-bold" : ""
+                }`
+              }
             >
               {link.icon}
               {link.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
 
-        <Link to="/profile">
-          <div className="hidden items-center gap-2 text-sm text-emerald-100 md:flex">
-            <UserCircleIcon size={28} weight="fill" aria-hidden="true" />
-            <span>{user?.username || "Guest"}</span>
-          </div>
-        </Link>
+        <NavLink to="/profile">
+          {({ isActive }) => (
+            <div
+              className={`hidden items-center gap-2 text-sm text-emerald-100 md:flex ${
+                isActive ? "font-bold" : ""
+              }`}
+            >
+              <UserCircleIcon size={28} weight="fill" aria-hidden="true" />
+              <span>{user?.username || "Guest"}</span>
+            </div>
+          )}
+        </NavLink>
 
         <button
           aria-expanded={drawerOpen}
@@ -98,14 +115,18 @@ function Header() {
             aria-label="Mobile navigation"
           >
             {links.map((link) => (
-              <Link
+              <NavLink
                 key={link.to}
-                className="rounded-lg px-3 py-3 text-left text-sm font-medium text-emerald-100 transition hover:bg-emerald-800 hover:text-white"
                 to={link.to}
                 onClick={closeDrawer}
+                className={({ isActive }) =>
+                  `rounded-lg px-3 py-3 text-left text-sm text-emerald-100 transition hover:bg-emerald-800 hover:text-white ${
+                    isActive ? "font-bold" : "font-medium"
+                  }`
+                }
               >
                 {link.label}
-              </Link>
+              </NavLink>
             ))}
             {isAuthenticated ? (
               <button
@@ -117,13 +138,17 @@ function Header() {
               </button>
             ) : (
               <>
-                <Link
-                  className="rounded-lg px-3 py-3 text-left text-sm font-medium text-emerald-100 transition hover:bg-emerald-800 hover:text-white"
+                <NavLink
+                  className={({ isActive }) =>
+                    `rounded-lg px-3 py-3 text-left text-sm text-emerald-100 transition hover:bg-emerald-800 hover:text-white ${
+                      isActive ? "font-bold" : "font-medium"
+                    }`
+                  }
                   to="/login"
                   onClick={closeDrawer}
                 >
                   Sign in
-                </Link>
+                </NavLink>
                 <Link
                   className="mt-2 rounded-lg bg-emerald-500 px-3 py-3 text-center text-sm font-semibold text-white transition hover:bg-emerald-400"
                   to="/register"
