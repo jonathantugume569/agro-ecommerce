@@ -55,12 +55,14 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = useCallback(async (username, password) => {
-    const data = await loginRequest({ username, password });
-    saveTokens({ access: data.access, refresh: data.refresh });
-    saveUser(data.user);
-    setUser(data.user);
-    return data.user;
-  }, []);
+  const data = await loginRequest({ username, password });
+  saveTokens({ access: data.access, refresh: data.refresh });
+
+  const profile = data.user ?? (await getMe());
+  saveUser(profile);
+  setUser(profile);
+  return profile;
+}, []);
 
   const register = useCallback((payload) => registerRequest(payload), []);
 

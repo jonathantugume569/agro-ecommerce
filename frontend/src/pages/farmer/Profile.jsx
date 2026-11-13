@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { getProfile, updateProfile } from "../../utils/requests";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -7,6 +8,7 @@ import {
   getFieldErrors,
   formatDate,
 } from "../../utils/formatters";
+import { DoorOpenIcon } from "@phosphor-icons/react";
 
 const FARMER_FIELDS = ["location", "district", "farm_size_acres", "main_crops"];
 const DEALER_FIELDS = [
@@ -23,7 +25,9 @@ function toForm(data, fields) {
 
 // Used by both farmers and dealers.
 export default function Profile() {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, logout } = useAuth();
+  const navigate = useNavigate();
+
   const isDealer = user?.role === "dealer";
   const isFarmer = user?.role === "farmer";
   const fields = isDealer ? DEALER_FIELDS : FARMER_FIELDS;
@@ -35,6 +39,12 @@ export default function Profile() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+
+  function handleLogout() {
+    logout();
+    toast.success("Signed out.");
+    navigate("/login", { replace: true });
+  }
 
   useEffect(() => {
     if (!isDealer && !isFarmer) return undefined;
@@ -107,23 +117,42 @@ export default function Profile() {
       <h1>My profile</h1>
 
       <section className="card">
-        <h2 className="border-b border-gray-300 pb-4">Account</h2>
+        <div class="flex items-center justify-between">
+          <h2 className="border-b border-gray-300 pb-4">Account</h2>
+          <button
+            type="button"
+            className="btn secondary"
+            onClick={handleLogout}
+          >
+            <DoorOpenIcon />
+            Sign out
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-4 mt-4">
           <div className="form-field">
             <label htmlFor="username">Username</label>
-            <div id="username" className="uppercase">{user?.username}</div>
+            <div id="username" className="uppercase">
+              {user?.username}
+            </div>
           </div>
           <div className="form-field">
             <label htmlFor="email">Email</label>
-            <div id="email" className="">{user?.email}</div>
+            <div id="email" className="">
+              {user?.email}
+            </div>
           </div>
           <div className="form-field">
             <label htmlFor="phone">Phone</label>
-            <div id="phone" className="uppercase">{user?.phone || "Not provided"}</div>
+            <div id="phone" className="uppercase">
+              {user?.phone || "Not provided"}
+            </div>
           </div>
           <div className="form-field">
             <label htmlFor="role">Account type</label>
-            <div id="role" className="uppercase">{user?.role}</div>
+            <div id="role" className="uppercase">
+              {user?.role}
+            </div>
           </div>
         </div>
       </section>
@@ -148,7 +177,9 @@ export default function Profile() {
 
       {(isDealer || isFarmer) && (
         <form className="card" onSubmit={handleSubmit}>
-          <h2 className="border-b border-gray-300 pb-4">{isDealer ? "Business details" : "Farm details"}</h2>
+          <h2 className="border-b border-gray-300 pb-4">
+            {isDealer ? "Business details" : "Farm details"}
+          </h2>
 
           {error && <div className="alert alert-error">{error}</div>}
           {success && <div className="alert alert-success">{success}</div>}
@@ -284,7 +315,11 @@ export default function Profile() {
             </div>
           )}
 
-          <button className="btn primary mt-4 self-right" type="submit" disabled={saving}>
+          <button
+            className="btn primary mt-4 self-right"
+            type="submit"
+            disabled={saving}
+          >
             {saving ? "Saving..." : "Save changes"}
           </button>
         </form>
