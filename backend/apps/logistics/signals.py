@@ -1,11 +1,9 @@
-# apps/logistics/signals.py
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from apps.orders.models import Order
 from .models import Delivery, DeliveryUpdate
 
 
-@receiver(post_save, sender=Order)
+@receiver(post_save, sender="orders.Order")
 def create_delivery_on_order(sender, instance, created, **kwargs):
     if created:
         delivery = Delivery.objects.create(order=instance)
