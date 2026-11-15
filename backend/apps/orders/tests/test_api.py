@@ -135,3 +135,45 @@ class OrderApiTests(APITestCase):
     def test_login_required(self):
         self.client.force_authenticate(None)
         self.assertEqual(self.client.get(URL).status_code, 401)
+
+
+class OrderFixTests(APITestCase):
+    def setUp(self):
+        self.farmer = make_farmer()
+        self.good = make_dealer(verified=True)
+        self.bad = make_dealer(verified=False)
+        self.ok_listing = make_listing(self.good, "Maize seed", "10000", stock=10)
+        self.unverified_listing = make_listing(self.bad, "Hoe", "20000", stock=5)
+        self.client.force_authenticate(self.farmer)
+
+    def post(self, lines, **extra):
+        body = {"items": [{"listing": l.id, "quantity": q} for l, q in lines], "delivery_address": "Gulu"}
+        body.update(extra)
+        return self.client.post(URL, body, format="json")
+
+    def test_unverified_dealer_rejected(self):
+        res = self.post([(self.unverified_listing, 1)])
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(Order.objects.count(), 0)
+        self.unverified_listing.refresh_from_db()
+        self.assertEqual(self.unverified_listing.stock, 5)
+
+    def test_invalid_status_filter_is_400(self):
+        self.assertEqual(self.client.get(URL + "?status=bogus").status_code, 400)
+
+    def test_expected_total_match_ok(self):
+        self.assertEqual(self.post([(self.ok_listing, 2)], expected_total="20000.00").status_code, 201)
+
+    def test_expected_total_mismatch_changes_nothing(self):
+        res = self.post([(self.ok_listing, 2)], expected_total="15000.00")
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(Order.objects.count(), 0)
+        self.ok_listing.refresh_from_db()
+        self.assertEqual(self.ok_listing.stock, 10)
+
+    def test_zero_quantity_blocked_by_database(self):
+        from django.db import IntegrityError, transaction
+        from apps.orders.models import OrderItem
+        order = Order.objects.create(farmer=self.farmer, dealer=self.good, delivery_address="x")
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            OrderItem.objects.create(order=order, listing=self.ok_listing, product_name="x", quantity=0, unit_price=Decimal("1"))

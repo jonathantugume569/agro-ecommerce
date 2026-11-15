@@ -1,4 +1,5 @@
 from rest_framework import generics, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -37,7 +38,11 @@ class OrderListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         qs = orders_for(self.request.user)
         wanted = self.request.query_params.get("status")
-        if wanted in OrderStatus.values:
+        if wanted:
+            if wanted not in OrderStatus.values:
+                raise ValidationError(
+                    {"status": [f"Invalid status. Choose from: {', '.join(OrderStatus.values)}."]}
+                )
             qs = qs.filter(status=wanted)
         return qs
 

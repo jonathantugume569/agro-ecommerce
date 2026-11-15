@@ -50,6 +50,15 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField()
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
 
+    class Meta:
+        constraints = [
+            # PositiveIntegerField allows 0; an order line must be at least 1.
+            models.CheckConstraint(
+                condition=models.Q(quantity__gte=1),
+                name="orderitem_quantity_gte_1",
+            ),
+        ]
+
     def __str__(self):
         return f"{self.quantity} x {self.product_name}"
 

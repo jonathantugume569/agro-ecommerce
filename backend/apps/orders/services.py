@@ -30,6 +30,12 @@ def _listing_dealer_user(listing):
     return getattr(dealer, "user", dealer)
 
 
+def _dealer_is_verified(listing):
+    """True only if the listing's dealer has a verified DealerProfile."""
+    profile = getattr(_listing_dealer_user(listing), "dealer_profile", None)
+    return bool(profile and profile.is_verified)
+
+
 def _merge_items(items):
     """Combine duplicate listing ids: [{listing: 1, quantity: 2}, {listing: 1, quantity: 3}] -> {1: 5}"""
     wanted = defaultdict(int)
@@ -39,10 +45,13 @@ def _merge_items(items):
 
 
 @transaction.atomic
-def place_orders(farmer, items, delivery_address, notes=""):
+def place_orders(farmer, items, delivery_address, notes="", expected_total=None):
     """Turn a cart into one Order per dealer. Returns the list of new orders.
 
     items: [{"listing": <listing id>, "quantity": <int>}, ...]
+    expected_total: optional. The cart total the farmer was shown. If the current
+        listing prices add up to something different, nothing is placed and the
+        farmer is asked to review the new total.
     All-or-nothing: if any line fails validation, nothing is created and no stock moves.
     """
     wanted = _merge_items(items)
@@ -50,6 +59,8 @@ def place_orders(farmer, items, delivery_address, notes=""):
         _fail("Your cart is empty.")
 
     # Lock the listing rows for the rest of this transaction.
+    # NOTE: SQLite ignores select_for_update() (no row locks). That's fine for local
+    # development; on PostgreSQL/MySQL this really does stop two buyers taking the last item.
     listings = {
         l.id: l
         for l in Listing.objects.select_for_update().filter(id__in=wanted.keys())
@@ -63,10 +74,23 @@ def place_orders(farmer, items, delivery_address, notes=""):
         name = _listing_name(listing)
         if not listing.active:
             _fail(f"{name} is no longer available.")
+        if not _dealer_is_verified(listing):
+            _fail(f"{name} is from a dealer who hasn't been verified yet.")
         if qty > listing.stock:
             _fail(f"Only {listing.stock} of {name} left in stock (you asked for {qty}).")
         if _listing_dealer_user(listing) == farmer:
             _fail("You can't order your own listing.")
+
+    # 1b. If the farmer was shown a total, make sure prices haven't moved since.
+    if expected_total is not None:
+        current_total = sum(
+            (listings[lid].price * qty for lid, qty in wanted.items()), Decimal("0.00")
+        )
+        if current_total != Decimal(expected_total):
+            _fail(
+                f"Prices have changed since you added these items. "
+                f"The new total is {current_total}. Please review your cart and confirm."
+            )
 
     # 2. Group lines by dealer.
     by_dealer = defaultdict(list)

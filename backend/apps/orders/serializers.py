@@ -43,3 +43,7 @@ class PlaceOrderSerializer(serializers.Serializer):
     items = PlaceOrderLineSerializer(many=True, allow_empty=False)
     delivery_address = serializers.CharField(max_length=255)
     notes = serializers.CharField(required=False, allow_blank=True, default="")
+    # Optional: the total the farmer saw. Lets the backend catch price changes.
+    expected_total = serializers.DecimalField(
+        max_digits=14, decimal_places=2, required=False, allow_null=True, default=None
+    )
