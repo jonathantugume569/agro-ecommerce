@@ -6,9 +6,17 @@ import Profile from "../pages/farmer/Profile";
 import VerificationRequest from "../pages/dealer/VerificationRequest";
 import VerifyDealers from "../pages/admin/VerifyDealers";
 import ManageUsers from "../pages/admin/ManageUsers";
+import Cart from "../pages/farmer/Cart";
+import Checkout from "../pages/farmer/Checkout";
+import MyOrders from "../pages/farmer/MyOrders";
+import OrderDetail from "../pages/farmer/OrderDetail";
+import DealerOrders from "../pages/dealer/DealerOrders";
 
 const Placeholder = ({ title }) => (
-  <div className="page"><h1>{title}</h1><p className="muted">Coming soon.</p></div>
+  <div className="page">
+    <h1>{title}</h1>
+    <p className="muted">Coming soon.</p>
+  </div>
 );
 
 export default function AppRoutes() {
@@ -22,15 +30,29 @@ export default function AppRoutes() {
         <Route path="/profile" element={<Profile />} />
       </Route>
 
+      <Route element={<RoleRoute allowedRoles={["farmer"]} />}>
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders" element={<MyOrders />} />
+        <Route path="/orders/:id" element={<OrderDetail />} />
+      </Route>
+
       <Route element={<RoleRoute allowedRoles={["dealer"]} />}>
         <Route path="/dealer/verification" element={<VerificationRequest />} />
-        <Route path="/dealer/dashboard" element={<Placeholder title="Dealer dashboard" />} />
+        <Route
+          path="/dealer/dashboard"
+          element={<Placeholder title="Dealer dashboard" />}
+        />
+        <Route path="/dealer/orders" element={<DealerOrders />} /> {/* new */}
       </Route>
 
       <Route element={<RoleRoute allowedRoles={["admin"]} />}>
         <Route path="/admin/verifications" element={<VerifyDealers />} />
         <Route path="/admin/users" element={<ManageUsers />} />
-        <Route path="/admin/dashboard" element={<Placeholder title="Admin dashboard" />} />
+        <Route
+          path="/admin/dashboard"
+          element={<Placeholder title="Admin dashboard" />}
+        />
       </Route>
 
       <Route path="/products" element={<Placeholder title="Products" />} />
