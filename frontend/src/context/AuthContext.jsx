@@ -1,14 +1,22 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
-import { getMe, login as loginRequest, register as registerRequest } from "../api/authApi";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { getMe, login as loginRequest, register as registerRequest } from "../utils/requests";
 import {
   clearSession,
   getAccessToken,
   getStoredUser,
   saveTokens,
   saveUser,
-} from "../utils/tokenStorage";
+} from "../utils/tokens";
 
 export const AuthContext = createContext(null);
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used inside <AuthProvider>.");
+  }
+  return context;
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(getStoredUser());
@@ -47,12 +55,14 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = useCallback(async (username, password) => {
-    const data = await loginRequest({ username, password });
-    saveTokens({ access: data.access, refresh: data.refresh });
-    saveUser(data.user);
-    setUser(data.user);
-    return data.user;
-  }, []);
+  const data = await loginRequest({ username, password });
+  saveTokens({ access: data.access, refresh: data.refresh });
+
+  const profile = data.user ?? (await getMe());
+  saveUser(profile);
+  setUser(profile);
+  return profile;
+}, []);
 
   const register = useCallback((payload) => registerRequest(payload), []);
 

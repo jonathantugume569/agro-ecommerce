@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { getMyVerifications, getProfile, submitVerification } from "../../api/dealersApi";
-import FormField from "../../components/common/FormField";
-import VerifiedBadge from "../../components/dealers/VerifiedBadge";
-import useAuth from "../../hooks/useAuth";
-import { getErrorMessage } from "../../utils/apiErrors";
-import { formatDate } from "../../utils/formatDate";
-import "../../styles/accounts.css";
+import { getMyVerifications, getProfile, submitVerification } from "../../utils/requests";
+import { useAuth } from "../../context/AuthContext";
+import { getErrorMessage, formatDate } from "../../utils/formatters";
 
 const MAX_SIZE_MB = 5;
 const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
@@ -107,7 +103,7 @@ export default function VerificationRequest() {
 
       {isVerified && (
         <div className="alert alert-success">
-          <VerifiedBadge verified /> Your business was verified on {formatDate(profile.verified_at)}.
+          <span className="pill pill-approved">Verified</span> Your business was verified on {formatDate(profile.verified_at)}.
         </div>
       )}
 
@@ -151,8 +147,11 @@ export default function VerificationRequest() {
             <small className="hint">PDF, JPG or PNG, up to {MAX_SIZE_MB} MB.</small>
           </div>
 
-          <FormField as="textarea" rows={3} label="Notes for the reviewer (optional)" name="notes"
-            value={notes} onChange={(e) => setNotes(e.target.value)} />
+          <div className="form-field">
+            <label htmlFor="notes">Notes for the reviewer (optional)</label>
+            <textarea className="input outlined" id="notes" name="notes" rows={3}
+              value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </div>
 
           <button className="btn btn-primary" type="submit" disabled={submitting}>
             {submitting ? "Uploading..." : "Submit for review"}
