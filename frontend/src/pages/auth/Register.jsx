@@ -130,172 +130,59 @@ export default function Register() {
           </button>
         </div>
 
-        <div className="flex flex-col my-4">
-          <div
-            className={`form-field${fieldErrors.username ? " has-error" : ""}`}
-          >
-            <label htmlFor="username">Username</label>
-            <input
-              className="input outlined"
-              id="username"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-              required
-            />
-            {fieldErrors.username && (
-              <small className="field-error">{fieldErrors.username}</small>
-            )}
-          </div>
-          <div className={`form-field${fieldErrors.email ? " has-error" : ""}`}>
-            <label htmlFor="email">Email</label>
-            <input
-              className="input outlined"
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-            {fieldErrors.email && (
-              <small className="field-error">{fieldErrors.email}</small>
-            )}
-          </div>
-          <div className={`form-field${fieldErrors.phone ? " has-error" : ""}`}>
-            <label htmlFor="phone">Phone</label>
-            <input
-              className="input outlined"
-              id="phone"
-              name="phone"
-              type="tel"
-              value={form.phone}
-              onChange={handleChange}
-              placeholder="+2567XXXXXXXX"
-            />
-            {fieldErrors.phone && (
-              <small className="field-error">{fieldErrors.phone}</small>
-            )}
-          </div>
-          <div className="flex gap-4">
-            <div
-              className={`flex-1 form-field${fieldErrors.district ? " has-error" : ""}`}
-            >
-              <label htmlFor="district">District</label>
-              <input
-                className="input outlined"
-                id="district"
-                name="district"
-                value={form.district}
-                onChange={handleChange}
-              />
-              {fieldErrors.district && (
-                <small className="field-error">{fieldErrors.district}</small>
-              )}
-            </div>
-            <div
-              className={`flex-1 form-field${fieldErrors.location ? " has-error" : ""}`}
-            >
-              <label htmlFor="location">Location / village</label>
-              <input
-                className="input outlined"
-                id="location"
-                name="location"
-                value={form.location}
-                onChange={handleChange}
-              />
-              {fieldErrors.location && (
-                <small className="field-error">{fieldErrors.location}</small>
-              )}
-            </div>
-          </div>
+        {error && <div className="alert alert-error">{error}</div>}
 
-          {isDealer && (
-            <>
-              <div
-                className={`form-field${fieldErrors.business_name ? " has-error" : ""}`}
-              >
-                <label htmlFor="business_name">Business name</label>
-                <input
-                  className="input outlined"
-                  id="business_name"
-                  name="business_name"
-                  value={form.business_name}
-                  onChange={handleChange}
-                  required
-                />
-                {fieldErrors.business_name && (
-                  <small className="field-error">
-                    {fieldErrors.business_name}
-                  </small>
-                )}
-              </div>
-              <div
-                className={`form-field${fieldErrors.license_number ? " has-error" : ""}`}
-              >
-                <label htmlFor="license_number">Trading licence number</label>
-                <input
-                  className="input outlined"
-                  id="license_number"
-                  name="license_number"
-                  value={form.license_number}
-                  onChange={handleChange}
-                  required
-                />
-                <small className="hint">
-                  You will upload the licence document after signing up.
-                </small>
-                {fieldErrors.license_number && (
-                  <small className="field-error">
-                    {fieldErrors.license_number}
-                  </small>
-                )}
-              </div>
-            </>
-          )}
+        {/* ---------- Section 1: same for everyone ---------- */}
+        <fieldset className="form-section">
+          <legend>Account details</legend>
+          <div className="form-grid">
+            <FormField label="Username" name="username" value={form.username}
+              onChange={handleChange} error={fieldErrors.username}
+              autoComplete="username" required />
+            <FormField label="Email" name="email" type="email" value={form.email}
+              onChange={handleChange} error={fieldErrors.email}
+              autoComplete="email" required />
+            <FormField label="Phone" name="phone" type="tel" value={form.phone}
+              onChange={handleChange} error={fieldErrors.phone} placeholder="+256..." />
+            <div />
+            <FormField label="Password" name="password" type="password" value={form.password}
+              onChange={handleChange} error={fieldErrors.password} autoComplete="new-password"
+              hint="At least 8 characters, not too common." required />
+            <FormField label="Confirm password" name="confirmPassword" type="password"
+              value={form.confirmPassword} onChange={handleChange}
+              error={fieldErrors.confirmPassword} autoComplete="new-password" required />
+          </div>
+        </fieldset>
 
-          <div
-            className={`form-field${fieldErrors.password ? " has-error" : ""}`}
-          >
-            <label htmlFor="password">Password</label>
-            <input
-              className="input outlined"
-              id="password"
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              autoComplete="new-password"
-              required
-            />
-            <small className="hint">
-              At least 8 characters, not too common.
-            </small>
-            {fieldErrors.password && (
-              <small className="field-error">{fieldErrors.password}</small>
-            )}
-          </div>
-          <div
-            className={`form-field${fieldErrors.confirmPassword ? " has-error" : ""}`}
-          >
-            <label htmlFor="confirmPassword">Confirm password</label>
-            <input
-              className="input outlined"
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              autoComplete="new-password"
-              required
-            />
-            {fieldErrors.confirmPassword && (
-              <small className="field-error">
-                {fieldErrors.confirmPassword}
-              </small>
-            )}
-          </div>
-        </div>
+        {/* ---------- Section 2: depends on the role ---------- */}
+        {isDealer ? (
+          <fieldset className="form-section">
+            <legend>Business details</legend>
+            <div className="form-grid">
+              <FormField label="Business name" name="business_name" value={form.business_name}
+                onChange={handleChange} error={fieldErrors.business_name} required />
+              <FormField label="Trading licence number" name="license_number"
+                value={form.license_number} onChange={handleChange}
+                error={fieldErrors.license_number} required
+                hint="You will upload the licence document after signing up." />
+              <FormField label="Business location" name="location" value={form.location}
+                onChange={handleChange} error={fieldErrors.location}
+                placeholder="Town, street or market" />
+              <FormField label="Business district" name="district" value={form.district}
+                onChange={handleChange} error={fieldErrors.district} />
+            </div>
+          </fieldset>
+        ) : (
+          <fieldset className="form-section">
+            <legend>Farm location</legend>
+            <div className="form-grid">
+              <FormField label="Village / location" name="location" value={form.location}
+                onChange={handleChange} error={fieldErrors.location} />
+              <FormField label="District" name="district" value={form.district}
+                onChange={handleChange} error={fieldErrors.district} />
+            </div>
+          </fieldset>
+        )}
 
         <button
           className="btn primary w-full"
