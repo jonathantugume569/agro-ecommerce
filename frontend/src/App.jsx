@@ -1,5 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
 import AppRoutes from "./routes/AppRoutes";
 import { Toaster } from "sonner";
 import { AppProvider } from "./context/AppContext";
@@ -16,9 +17,11 @@ export default function App() {
     <BrowserRouter>
       <AppProvider>
         <AuthProvider>
-          <AppRoutes />
-          <ModalHost />
-          <Toaster position="top-right" richColors />
+          <CartProvider>
+            <AppRoutes />
+            <ModalHost />
+            <Toaster position="top-right" richColors />
+          </CartProvider>
         </AuthProvider>
       </AppProvider>
     </BrowserRouter>
