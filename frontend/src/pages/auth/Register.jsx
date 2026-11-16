@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import FormField from "../../components/common/FormField";
-import useAuth from "../../hooks/useAuth";
-import { getErrorMessage, getFieldErrors } from "../../utils/apiErrors";
+import { toast } from "sonner";
+import { useAuth } from "../../context/AuthContext";
+import { getErrorMessage, getFieldErrors } from "../../utils/formatters";
 import { homePathForRole } from "../../utils/roles";
-import "../../styles/accounts.css";
 
 const INITIAL = {
   username: "",
@@ -24,7 +23,6 @@ export default function Register() {
 
   const [role, setRole] = useState("farmer");
   const [form, setForm] = useState(INITIAL);
-  const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [justRegistered, setJustRegistered] = useState(false);
@@ -48,11 +46,12 @@ export default function Register() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setError("");
     setFieldErrors({});
 
     if (form.password !== form.confirmPassword) {
-      setFieldErrors({ confirmPassword: "Passwords do not match." });
+      const msg = "Passwords do not match.";
+      setFieldErrors({ confirmPassword: msg });
+      toast.error(msg);
       return;
     }
 
@@ -71,11 +70,16 @@ export default function Register() {
     }
 
     setSubmitting(true);
+    const toastId = toast.loading("Creating your account...");
+
     try {
       await register(payload);
     } catch (err) {
       setFieldErrors(getFieldErrors(err));
-      setError(getErrorMessage(err, "Registration failed. Please check the form."));
+      toast.error(
+        getErrorMessage(err, "Registration failed. Please check the form."),
+        { id: toastId }
+      );
       setSubmitting(false);
       return;
     }
@@ -84,72 +88,115 @@ export default function Register() {
     try {
       setJustRegistered(true);
       await login(payload.username, payload.password);
+      toast.success(
+        isDealer
+          ? "Account created! Please complete your dealer verification."
+          : "Account created! Welcome to AgroEcom.",
+        { id: toastId }
+      );
     } catch {
+      toast.info("Account created! Please sign in to continue.", {
+        id: toastId,
+      });
       navigate("/login", { replace: true });
     }
   }
 
   return (
-    <div className="auth-page">
-      <form className="card auth-card auth-card-wide" onSubmit={handleSubmit}>
-        <h1>Create your account</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <form className="card w-full max-w-lg" onSubmit={handleSubmit}>
+        <h1 className="border-b border-gray-200 pb-4 text-center">
+          Create your account
+        </h1>
 
-        <div className="role-switch" role="group" aria-label="Account type">
+        <div
+          className="flex gap-4 border-b border-gray-200 py-4"
+          role="group"
+          aria-label="Account type"
+        >
           <button
             type="button"
-            className={`role-option${role === "farmer" ? " active" : ""}`}
+            className={`btn ${role === "farmer" ? " primary" : " secondary"} flex-1`}
             onClick={() => setRole("farmer")}
           >
             I am a farmer
           </button>
           <button
             type="button"
-            className={`role-option${role === "dealer" ? " active" : ""}`}
+            className={`btn ${role === "dealer" ? " primary" : " secondary"} flex-1`}
             onClick={() => setRole("dealer")}
           >
-            I am an agro-dealer
+            I am an Agro Dealer
           </button>
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
 
-        <div className="form-grid">
-          <FormField label="Username" name="username" value={form.username}
-            onChange={handleChange} error={fieldErrors.username} required />
-          <FormField label="Email" name="email" type="email" value={form.email}
-            onChange={handleChange} error={fieldErrors.email} required />
-          <FormField label="Phone" name="phone" type="tel" value={form.phone}
-            onChange={handleChange} error={fieldErrors.phone} placeholder="+256..." />
-          <FormField label="District" name="district" value={form.district}
-            onChange={handleChange} error={fieldErrors.district} />
-          <FormField label="Location / village" name="location" value={form.location}
-            onChange={handleChange} error={fieldErrors.location} />
+        {/* ---------- Section 1: same for everyone ---------- */}
+        <fieldset className="form-section">
+          <legend>Account details</legend>
+          <div className="form-grid">
+            <FormField label="Username" name="username" value={form.username}
+              onChange={handleChange} error={fieldErrors.username}
+              autoComplete="username" required />
+            <FormField label="Email" name="email" type="email" value={form.email}
+              onChange={handleChange} error={fieldErrors.email}
+              autoComplete="email" required />
+            <FormField label="Phone" name="phone" type="tel" value={form.phone}
+              onChange={handleChange} error={fieldErrors.phone} placeholder="+256..." />
+            <div />
+            <FormField label="Password" name="password" type="password" value={form.password}
+              onChange={handleChange} error={fieldErrors.password} autoComplete="new-password"
+              hint="At least 8 characters, not too common." required />
+            <FormField label="Confirm password" name="confirmPassword" type="password"
+              value={form.confirmPassword} onChange={handleChange}
+              error={fieldErrors.confirmPassword} autoComplete="new-password" required />
+          </div>
+        </fieldset>
 
-          {isDealer && (
-            <>
+        {/* ---------- Section 2: depends on the role ---------- */}
+        {isDealer ? (
+          <fieldset className="form-section">
+            <legend>Business details</legend>
+            <div className="form-grid">
               <FormField label="Business name" name="business_name" value={form.business_name}
                 onChange={handleChange} error={fieldErrors.business_name} required />
               <FormField label="Trading licence number" name="license_number"
                 value={form.license_number} onChange={handleChange}
                 error={fieldErrors.license_number} required
                 hint="You will upload the licence document after signing up." />
-            </>
-          )}
+              <FormField label="Business location" name="location" value={form.location}
+                onChange={handleChange} error={fieldErrors.location}
+                placeholder="Town, street or market" />
+              <FormField label="Business district" name="district" value={form.district}
+                onChange={handleChange} error={fieldErrors.district} />
+            </div>
+          </fieldset>
+        ) : (
+          <fieldset className="form-section">
+            <legend>Farm location</legend>
+            <div className="form-grid">
+              <FormField label="Village / location" name="location" value={form.location}
+                onChange={handleChange} error={fieldErrors.location} />
+              <FormField label="District" name="district" value={form.district}
+                onChange={handleChange} error={fieldErrors.district} />
+            </div>
+          </fieldset>
+        )}
 
-          <FormField label="Password" name="password" type="password" value={form.password}
-            onChange={handleChange} error={fieldErrors.password} autoComplete="new-password"
-            hint="At least 8 characters, not too common." required />
-          <FormField label="Confirm password" name="confirmPassword" type="password"
-            value={form.confirmPassword} onChange={handleChange}
-            error={fieldErrors.confirmPassword} autoComplete="new-password" required />
-        </div>
-
-        <button className="btn btn-primary btn-block" type="submit" disabled={submitting}>
+        <button
+          className="btn primary w-full"
+          type="submit"
+          disabled={submitting}
+        >
           {submitting ? "Creating account..." : "Create account"}
         </button>
 
-        <p className="auth-switch">
-          Already registered? <Link to="/login">Sign in</Link>
+        <p className="mt-4">
+          Already registered?{" "}
+          <Link to="/login" className="link underline">
+            Sign in
+          </Link>
         </p>
       </form>
     </div>

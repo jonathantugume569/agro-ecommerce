@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { useAuth } from "../context/AuthContext";
 import { homePathForRole } from "../utils/roles";
 
 // <RoleRoute allowedRoles={["dealer"]}> ...pages... </RoleRoute>

@@ -11,6 +11,9 @@ import Checkout from "../pages/farmer/Checkout";
 import MyOrders from "../pages/farmer/MyOrders";
 import OrderDetail from "../pages/farmer/OrderDetail";
 import DealerOrders from "../pages/dealer/DealerOrders";
+import HomePage from "../pages/farmer/HomePage";
+import Footer from "../components/common/Footer";
+import Header from "../components/common/Header";
 
 const Placeholder = ({ title }) => (
   <div className="page">
@@ -21,42 +24,51 @@ const Placeholder = ({ title }) => (
 
 export default function AppRoutes() {
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+    <>
+      <Header />
+      <main className="bg-gray-100">
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-      <Route element={<RoleRoute allowedRoles={["farmer", "dealer"]} />}>
-        <Route path="/profile" element={<Profile />} />
-      </Route>
+          <Route element={<RoleRoute allowedRoles={["farmer", "dealer"]} />}>
+            <Route path="/profile" element={<Profile />} />
+          </Route>
 
-      <Route element={<RoleRoute allowedRoles={["farmer"]} />}>
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/orders" element={<MyOrders />} />
-        <Route path="/orders/:id" element={<OrderDetail />} />
-      </Route>
+          <Route element={<RoleRoute allowedRoles={["farmer"]} />}>
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/orders" element={<MyOrders />} />
+            <Route path="/orders/:id" element={<OrderDetail />} />
+          </Route>
 
-      <Route element={<RoleRoute allowedRoles={["dealer"]} />}>
-        <Route path="/dealer/verification" element={<VerificationRequest />} />
-        <Route
-          path="/dealer/dashboard"
-          element={<Placeholder title="Dealer dashboard" />}
-        />
-        <Route path="/dealer/orders" element={<DealerOrders />} /> {/* new */}
-      </Route>
+          <Route element={<RoleRoute allowedRoles={["dealer"]} />}>
+            <Route
+              path="/dealer/verification"
+              element={<VerificationRequest />}
+            />
+            <Route
+              path="/dealer/dashboard"
+              element={<Placeholder title="Dealer dashboard" />}
+            />
+            <Route path="/dealer/orders" element={<DealerOrders />} />
+          </Route>
 
-      <Route element={<RoleRoute allowedRoles={["admin"]} />}>
-        <Route path="/admin/verifications" element={<VerifyDealers />} />
-        <Route path="/admin/users" element={<ManageUsers />} />
-        <Route
-          path="/admin/dashboard"
-          element={<Placeholder title="Admin dashboard" />}
-        />
-      </Route>
+          <Route element={<RoleRoute allowedRoles={["admin"]} />}>
+            <Route path="/admin/verifications" element={<VerifyDealers />} />
+            <Route path="/admin/users" element={<ManageUsers />} />
+            <Route
+              path="/admin/dashboard"
+              element={<Placeholder title="Admin dashboard" />}
+            />
+          </Route>
 
-      <Route path="/products" element={<Placeholder title="Products" />} />
-      <Route path="*" element={<Placeholder title="Page not found" />} />
-    </Routes>
+          <Route path="/products" element={<HomePage />} />
+          <Route path="*" element={<Placeholder title="Page not found" />} />
+        </Routes>
+      </main>
+      <Footer />
+    </>
   );
 }
