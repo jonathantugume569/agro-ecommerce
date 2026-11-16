@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import FormField from "../../components/common/FormField";
 import { useAuth } from "../../context/AuthContext";
 import { getErrorMessage, getFieldErrors } from "../../utils/formatters";
 import { homePathForRole } from "../../utils/roles";
@@ -130,12 +131,10 @@ export default function Register() {
           </button>
         </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
-
         {/* ---------- Section 1: same for everyone ---------- */}
-        <fieldset className="form-section">
-          <legend>Account details</legend>
-          <div className="form-grid">
+        <fieldset className="mt-4 border-0 border-t border-gray-200 pt-4">
+          <legend className="pr-2 font-bold">Account details</legend>
+          <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
             <FormField label="Username" name="username" value={form.username}
               onChange={handleChange} error={fieldErrors.username}
               autoComplete="username" required />
@@ -144,7 +143,7 @@ export default function Register() {
               autoComplete="email" required />
             <FormField label="Phone" name="phone" type="tel" value={form.phone}
               onChange={handleChange} error={fieldErrors.phone} placeholder="+256..." />
-            <div />
+            <div className="hidden sm:block" />
             <FormField label="Password" name="password" type="password" value={form.password}
               onChange={handleChange} error={fieldErrors.password} autoComplete="new-password"
               hint="At least 8 characters, not too common." required />
@@ -156,9 +155,9 @@ export default function Register() {
 
         {/* ---------- Section 2: depends on the role ---------- */}
         {isDealer ? (
-          <fieldset className="form-section">
-            <legend>Business details</legend>
-            <div className="form-grid">
+          <fieldset className="mt-4 border-0 border-t border-gray-200 pt-4">
+            <legend className="pr-2 font-bold">Business details</legend>
+            <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
               <FormField label="Business name" name="business_name" value={form.business_name}
                 onChange={handleChange} error={fieldErrors.business_name} required />
               <FormField label="Trading licence number" name="license_number"
@@ -173,9 +172,9 @@ export default function Register() {
             </div>
           </fieldset>
         ) : (
-          <fieldset className="form-section">
-            <legend>Farm location</legend>
-            <div className="form-grid">
+          <fieldset className="mt-4 border-0 border-t border-gray-200 pt-4">
+            <legend className="pr-2 font-bold">Farm location</legend>
+            <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
               <FormField label="Village / location" name="location" value={form.location}
                 onChange={handleChange} error={fieldErrors.location} />
               <FormField label="District" name="district" value={form.district}
@@ -185,7 +184,7 @@ export default function Register() {
         )}
 
         <button
-          className="btn primary w-full"
+          className="btn primary w-full mt-4"
           type="submit"
           disabled={submitting}
         >
