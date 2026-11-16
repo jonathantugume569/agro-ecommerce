@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { getAdminUsers } from "../../api/dealersApi";
-import VerifiedBadge from "../../components/dealers/VerifiedBadge";
-import { getErrorMessage } from "../../utils/apiErrors";
-import "../../styles/accounts.css";
+import { getAdminUsers } from "../../utils/requests";
+import { getErrorMessage } from "../../utils/formatters";
 
 function profileSummary(user) {
   const profile = user.profile;
@@ -10,7 +8,10 @@ function profileSummary(user) {
   if (user.role === "dealer") {
     return (
       <>
-        {profile.business_name} <VerifiedBadge verified={profile.is_verified} showUnverified />
+        {profile.business_name}{" "}
+        <span className={`pill ${profile.is_verified ? "pill-approved" : "pill-rejected"}`}>
+          {profile.is_verified ? "Verified" : "Not verified"}
+        </span>
       </>
     );
   }
