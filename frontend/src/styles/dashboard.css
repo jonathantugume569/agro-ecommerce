@@ -1,0 +1,61 @@
+/* Dashboard styles. Uses the colour variables from accounts.css (with fallbacks). */
+.dash-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.dash-head h1 { margin: 0; }
+.dash-title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 18px 0; }
+.stat-card {
+  display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 10px; text-decoration: none;
+  background: var(--c-surface, #fff); border: 1px solid var(--c-border, #dbe3da); color: var(--c-text, #1d2a1f);
+}
+a.stat-card:hover { border-color: var(--c-primary, #2e7d32); }
+.stat-label { font-size: 0.82rem; color: var(--c-muted, #5f6f62); }
+.stat-value { font-size: 1.9rem; line-height: 1.1; }
+.stat-hint { font-size: 0.8rem; color: var(--c-muted, #5f6f62); }
+.stat-warn { border-left: 4px solid #f0a500; }
+.stat-good { border-left: 4px solid var(--c-primary, #2e7d32); }
+
+.dash-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.dash-card {
+  background: var(--c-surface, #fff); border: 1px solid var(--c-border, #dbe3da);
+  border-radius: 10px; padding: 18px;
+}
+.dash-card h2 { margin: 0 0 10px; font-size: 1.05rem; }
+.dash-list { list-style: none; margin: 0; padding: 0; }
+.dash-list li {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--c-border, #dbe3da);
+}
+.dash-list li:last-child { border-bottom: 0; }
+.dash-list small { color: var(--c-muted, #5f6f62); display: block; }
+.dash-empty { color: var(--c-muted, #5f6f62); margin: 4px 0; }
+
+.action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 18px 0; }
+.action-tile {
+  display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 10px; text-decoration: none;
+  background: var(--c-surface, #fff); border: 1px solid var(--c-border, #dbe3da); color: var(--c-text, #1d2a1f);
+}
+.action-tile strong { font-size: 1rem; }
+.action-tile span { font-size: 0.85rem; color: var(--c-muted, #5f6f62); }
+a.action-tile:hover { border-color: var(--c-primary, #2e7d32); background: var(--c-success-bg, #e6f4e7); }
+.action-tile.disabled { opacity: 0.55; cursor: not-allowed; }
+
+
+/* Dealer verification badge */
+.verified-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.verified-badge.is-verified {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.verified-badge.not-verified {
+  background: #fee2e2;
+  color: #991b1b;
+}
