@@ -16,6 +16,8 @@ import Footer from "../components/common/Footer";
 import Header from "../components/common/Header";
 import MyListings from "../pages/dealer/MyListings";
 import ListingForm from "../pages/dealer/ListingForm";
+import AdminDashboard from "../pages/admin/Dashboard";
+import DealerDashboard from "../pages/dealer/Dashboard";
 
 const Placeholder = ({ title }) => (
   <div className="page">
@@ -52,21 +54,19 @@ export default function AppRoutes() {
             />
             <Route
               path="/dealer/dashboard"
-              element={<Placeholder title="Dealer dashboard" />}
+              element={<DealerDashboard />}
             />
             <Route path="/dealer/orders" element={<DealerOrders />} />
             <Route path="/dealer/listings" element={<MyListings />} />
             <Route path="/dealer/listings/new" element={<ListingForm />} />
             <Route path="/dealer/listings/:id/edit" element={<ListingForm />} />
+            <Route path="/dealer/dashboard" element={<DealerDashboard />}/>
           </Route>
 
           <Route element={<RoleRoute allowedRoles={["admin"]} />}>
             <Route path="/admin/verifications" element={<VerifyDealers />} />
             <Route path="/admin/users" element={<ManageUsers />} />
-            <Route
-              path="/admin/dashboard"
-              element={<Placeholder title="Admin dashboard" />}
-            />
+            <Route path="/admin/dashboard" element={<AdminDashboard />}/>
           </Route>
 
           <Route path="/products" element={<HomePage />} />
