@@ -11,3 +11,4 @@ urlpatterns = [
     path("<int:pk>/accept/", views.OrderAcceptView.as_view(), name="order-accept"),
     path("<int:pk>/reject/", views.OrderRejectView.as_view(), name="order-reject"),
 ]
+#tooooooooo
