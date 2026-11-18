@@ -54,7 +54,7 @@ class OrderApiTests(APITestCase):
         self.assertEqual(self.seed.stock, 10)  # the valid line was NOT applied
 
     def test_inactive_listing_cannot_be_ordered(self):
-        self.seed.active = False
+        self.seed.is_active = False
         self.seed.save()
         self.assertEqual(self.place([(self.seed, 1)]).status_code, 400)
 

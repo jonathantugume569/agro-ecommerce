@@ -1,8 +1,8 @@
-"""Test helpers. If Patrick's Listing/Product fields differ from these, fix ONLY make_listing()."""
+"""Test helpers for the orders app. Listing.dealer is a DealerProfile in the catalog app."""
 from decimal import Decimal
 
 from apps.accounts.models import DealerProfile, User
-from apps.catalog.models import Listing, Product
+from apps.catalog.models import Category, Listing, Product
 from common.constants import Roles
 
 _counter = {"n": 0}
@@ -34,7 +34,13 @@ def make_dealer(verified=True):
 
 
 def make_listing(dealer, name="Maize seed", price="10000", stock=10, active=True):
-    product, _ = Product.objects.get_or_create(name=name)
+    """`dealer` is the dealer's User (from make_dealer); the listing uses their DealerProfile."""
+    category, _ = Category.objects.get_or_create(name="Test category")
+    product, _ = Product.objects.get_or_create(name=name, category=category, unit="")
     return Listing.objects.create(
-        product=product, dealer=dealer, price=Decimal(price), stock=stock, active=active
+        product=product,
+        dealer=dealer.dealer_profile,
+        price=Decimal(price),
+        stock=stock,
+        is_active=active,
     )
