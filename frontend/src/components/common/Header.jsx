@@ -23,12 +23,28 @@ function Header() {
     closeDrawer();
   }
 
+  const isFarmer = user?.role === "farmer";
+  const isDealer = user?.role === "dealer";
+
   const links = [
     { label: "Products", to: "/products", icon: <PlantIcon size={20} /> },
-    ...(isAuthenticated
+    ...(isAuthenticated && isFarmer
       ? [
-          { label: "Cart", to: "/cart", icon: <ShoppingCartIcon size={20} /> },
+          {
+            label: totalItems > 0 ? `Cart (${totalItems})` : "Cart",
+            to: "/cart",
+            icon: <ShoppingCartIcon size={20} />,
+          },
           { label: "Orders", to: "/orders", icon: <ReceiptIcon size={20} /> },
+        ]
+      : []),
+    ...(isAuthenticated && isDealer
+      ? [
+          {
+            label: "Orders received",
+            to: "/dealer/orders",
+            icon: <ReceiptIcon size={20} />,
+          },
         ]
       : []),
   ];
