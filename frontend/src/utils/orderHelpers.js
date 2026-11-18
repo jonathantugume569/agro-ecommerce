@@ -28,3 +28,16 @@ export function getOrderError(error, fallback = "Something went wrong.") {
   const parts = Object.values(data).flat().map((v) => (typeof v === "string" ? v : JSON.stringify(v)));
   return parts.join(" ") || fallback;
 }
+
+// Turns a listing from the catalog API (/catalog/listings/ or /catalog/listings/<id>/)
+// into the shape the cart stores. Use this whenever you add a listing to the cart.
+export function listingToCartItem(listing) {
+  const product = listing.product || {};
+  return {
+    listingId: listing.id,
+    name: product.unit ? `${product.name} (${product.unit})` : product.name,
+    dealerName: listing.dealer?.business_name ?? "Dealer",
+    price: Number(listing.price),
+    stock: listing.stock,
+  };
+}
