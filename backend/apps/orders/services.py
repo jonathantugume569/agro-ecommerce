@@ -72,7 +72,7 @@ def place_orders(farmer, items, delivery_address, notes="", expected_total=None)
         if listing is None:
             _fail(f"Listing {listing_id} does not exist.")
         name = _listing_name(listing)
-        if not listing.active:
+        if not listing.is_active:
             _fail(f"{name} is no longer available.")
         if not _dealer_is_verified(listing):
             _fail(f"{name} is from a dealer who hasn't been verified yet.")
@@ -116,8 +116,7 @@ def place_orders(farmer, items, delivery_address, notes="", expected_total=None)
                 quantity=qty,
                 unit_price=listing.price,  # price frozen at purchase time
             )
-            listing.stock -= qty
-            listing.save(update_fields=["stock"])
+            listing.reduce_stock(qty)  # Listing helper from the catalog app
             total += listing.price * qty
         order.total_amount = total
         order.save(update_fields=["total_amount"])
@@ -131,8 +130,7 @@ def _restore_stock(order):
     locked = {l.id: l for l in Listing.objects.select_for_update().filter(id__in=listing_ids)}
     for item in order.items.all():
         listing = locked[item.listing_id]
-        listing.stock += item.quantity
-        listing.save(update_fields=["stock"])
+        listing.restore_stock(item.quantity)  # Listing helper from the catalog app
 
 
 def _change_status(order, new_status):
