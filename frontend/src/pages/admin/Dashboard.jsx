@@ -140,6 +140,10 @@ export default function AdminDashboard() {
           <strong>Manage users</strong>
           <span>Search farmers, dealers and admins.</span>
         </Link>
+        <Link className="action-tile" to="/admin/categories">
+          <strong>Manage Categories</strong>
+          <span>Create, edit and manage agricultural product categories.</span>
+        </Link>
       </div>
     </div>
   );

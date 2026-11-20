@@ -18,6 +18,7 @@ import MyListings from "../pages/dealer/MyListings";
 import ListingForm from "../pages/dealer/ListingForm";
 import AdminDashboard from "../pages/admin/Dashboard";
 import DealerDashboard from "../pages/dealer/Dashboard";
+import Categories from "../pages/admin/Categories";
 
 const Placeholder = ({ title }) => (
   <div className="page">
@@ -46,6 +47,11 @@ export default function AppRoutes() {
             <Route path="/orders" element={<MyOrders />} />
             <Route path="/orders/:id" element={<OrderDetail />} />
           </Route>
+
+          <Route
+            path="/admin/categories"
+            element={<Categories />}
+          />
 
           <Route element={<RoleRoute allowedRoles={["dealer"]} />}>
             <Route

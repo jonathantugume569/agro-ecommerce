@@ -59,6 +59,8 @@ export default function ListingForm() {
 
   const [showNewProduct, setShowNewProduct] = useState(false);
   const [newProduct, setNewProduct] = useState(EMPTY_PRODUCT);
+  const [newProductImage, setNewProductImage] = useState(null);
+  const [newProductImagePreview, setNewProductImagePreview] = useState("");
   const [productErrors, setProductErrors] = useState({});
   const [productFormError, setProductFormError] = useState("");
   const [creatingProduct, setCreatingProduct] = useState(false);
@@ -179,6 +181,27 @@ export default function ListingForm() {
     }
   }
 
+  function handleNewProductImage(event) {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image.");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must not exceed 5 MB.");
+      event.target.value = "";
+      return;
+    }
+
+    setNewProductImage(file);
+    setNewProductImagePreview(URL.createObjectURL(file));
+}
+
   async function handleCreateProduct() {
     setProductFormError("");
     const found = {};
@@ -189,15 +212,23 @@ export default function ListingForm() {
 
     setCreatingProduct(true);
     try {
-      const created = await createProduct({
-        name: newProduct.name.trim(),
-        category: Number(newProduct.category),
-        unit: newProduct.unit.trim(),
-        description: newProduct.description.trim(),
-      });
+      const productData = new FormData();
+
+      productData.append("name", newProduct.name.trim());
+      productData.append("category", Number(newProduct.category));
+      productData.append("unit", newProduct.unit.trim());
+      productData.append("description", newProduct.description.trim());
+
+      if (newProductImage) {
+        productData.append("image", newProductImage);
+      }
+
+      const created = await createProduct(productData);
       setProducts((list) => [created, ...list]);
       setField("product_id", String(created.id));
       setNewProduct(EMPTY_PRODUCT);
+      setNewProductImage(null);
+      setNewProductImagePreview("");
       setProductErrors({});
       setProductSearch("");
       setShowNewProduct(false);
@@ -364,6 +395,42 @@ export default function ListingForm() {
                 value={newProduct.description}
                 onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
               />
+            </Field>
+            <Field
+              label="Product Image"
+              htmlFor="new_product_image"
+              hint="Upload a clear product photo. Maximum size: 5 MB."
+            >
+              <input
+                id="new_product_image"
+                type="file"
+                accept="image/*"
+                className="input outlined"
+                onChange={handleNewProductImage}
+              />
+
+              {newProductImagePreview && (
+                <div className="mt-3">
+                  <img
+                    src={newProductImagePreview}
+                    alt="New product preview"
+                    className="h-48 w-full max-w-sm rounded-lg object-cover"
+                  />
+
+                  <button
+                    type="button"
+                    className="btn secondary mt-2"
+                    onClick={() => {
+                      setNewProductImage(null);
+                      setNewProductImagePreview("");
+                      const input = document.getElementById("new_product_image");
+                      if (input) input.value = "";
+                    }}
+                  >
+                    Remove image
+                  </button>
+                </div>
+              )}
             </Field>
 
             <div className="flex gap-2">
