@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models, transaction
 from .status_flow import STATUS_CHOICES, validate_transition
+from django.core.exceptions import ValidationError
 
 
 class Delivery(models.Model):
@@ -21,14 +22,22 @@ class Delivery(models.Model):
     @transaction.atomic
     def confirm_receipt(self, user):
         if self.status != "Delivered":
-            validate_transition(self.status, "Delivered")
-            self.status = "Delivered"
-            DeliveryUpdate.objects.create(
-                delivery=self, status="Delivered", note="Receipt confirmed by farmer.", updated_by=user
+            raise ValidationError(
+                "You can only confirm receipt after the delivery is marked Delivered."
             )
-        self.receipt_confirmed = True
-        self.save(update_fields=["status", "receipt_confirmed"])
 
+        if self.receipt_confirmed:
+            raise ValidationError("Receipt has already been confirmed.")
+
+        self.receipt_confirmed = True
+        self.save(update_fields=["receipt_confirmed"])
+
+        return DeliveryUpdate.objects.create(
+            delivery=self,
+            status="Delivered",
+            note="Receipt confirmed by farmer.",
+            updated_by=user,
+        )
 
 class DeliveryUpdate(models.Model):
     delivery = models.ForeignKey(Delivery, on_delete=models.CASCADE, related_name="updates")
