@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import useCart from "../../hooks/useCart";
 
 function Header() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -25,6 +26,7 @@ function Header() {
 
   const isFarmer = user?.role === "farmer";
   const isDealer = user?.role === "dealer";
+  const { totalItems } = useCart();
 
   const links = [
     { label: "Products", to: "/products", icon: <PlantIcon size={20} /> },
@@ -35,7 +37,11 @@ function Header() {
             to: "/cart",
             icon: <ShoppingCartIcon size={20} />,
           },
-          { label: "Orders", to: "/orders", icon: <ReceiptIcon size={20} /> },
+          {
+            label: "Orders",
+            to: "/orders",
+            icon: <ReceiptIcon size={20} />,
+          },
         ]
       : []),
     ...(isAuthenticated && isDealer

@@ -20,6 +20,7 @@ import AdminDashboard from "../pages/admin/Dashboard";
 import DealerDashboard from "../pages/dealer/Dashboard";
 import TrackDelivery from "../pages/farmer/TrackDelivery";
 import UpdateDelivery from "../pages/dealer/UpdateDelivery";
+import Categories from "../pages/admin/Categories";
 
 const Placeholder = ({ title }) => (
   <div className="page">
@@ -49,6 +50,11 @@ export default function AppRoutes() {
             <Route path="/orders/:id" element={<OrderDetail />} />
             <Route path="/orders/:orderId/track" element={<TrackDelivery />} />
           </Route>
+
+          <Route
+            path="/admin/categories"
+            element={<Categories />}
+          />
 
           <Route element={<RoleRoute allowedRoles={["dealer"]} />}>
             <Route
