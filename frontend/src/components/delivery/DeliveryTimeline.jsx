@@ -1,16 +1,17 @@
-import StatusBadge from "../common/StatusBadge";
-
 export default function DeliveryTimeline({ updates }) {
+  if (!updates || updates.length === 0) {
+    return <p>No delivery updates yet.</p>;
+  }
+
   return (
-    <ol>
-      {updates.map(({ id, status, note, updated_by_name, created_at }) => (
-        <li key={id}>
-          <StatusBadge status={status} />
-          <time dateTime={created_at}> {new Date(created_at).toLocaleString()}</time>
-          {note && <p>{note}</p>}
-          <small>by {updated_by_name}</small>
+    <ul>
+      {updates.map((update) => (
+        <li key={update.id}>
+          <strong>{update.status}</strong> —{" "}
+          <span>{new Date(update.timestamp).toLocaleString()}</span>
+          {update.note && <p>{update.note}</p>}
         </li>
       ))}
-    </ol>
+    </ul>
   );
 }

@@ -18,6 +18,8 @@ import MyListings from "../pages/dealer/MyListings";
 import ListingForm from "../pages/dealer/ListingForm";
 import AdminDashboard from "../pages/admin/Dashboard";
 import DealerDashboard from "../pages/dealer/Dashboard";
+import TrackDelivery from "../pages/farmer/TrackDelivery";
+import UpdateDelivery from "../pages/dealer/UpdateDelivery";
 import Categories from "../pages/admin/Categories";
 
 const Placeholder = ({ title }) => (
@@ -46,6 +48,7 @@ export default function AppRoutes() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/orders" element={<MyOrders />} />
             <Route path="/orders/:id" element={<OrderDetail />} />
+            <Route path="/orders/:orderId/track" element={<TrackDelivery />} />
           </Route>
 
           <Route
@@ -67,6 +70,7 @@ export default function AppRoutes() {
             <Route path="/dealer/listings/new" element={<ListingForm />} />
             <Route path="/dealer/listings/:id/edit" element={<ListingForm />} />
             <Route path="/dealer/dashboard" element={<DealerDashboard />}/>
+            <Route path="/dealer/orders/:orderId/delivery" element={<UpdateDelivery />} />
           </Route>
 
           <Route element={<RoleRoute allowedRoles={["admin"]} />}>
