@@ -21,7 +21,7 @@ class DealerProfileSerializer(serializers.ModelSerializer):
         fields = [
             "id", "business_name", "license_number", "location",
             "district", "description", "is_verified", "verified_at",
-        ]
+        "profile_picture",]
         read_only_fields = ["id", "is_verified", "verified_at"]
 
 
@@ -30,7 +30,7 @@ class DealerPublicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DealerProfile
-        fields = ["id", "business_name", "location", "district", "description", "is_verified"]
+        fields = ["id", "business_name", "location", "district", "description", "is_verified", "profile_picture"]
 
 
 # ---------- Users ----------
@@ -59,12 +59,16 @@ class RegisterSerializer(serializers.ModelSerializer):
     district = serializers.CharField(write_only=True, required=False, allow_blank=True)
     business_name = serializers.CharField(write_only=True, required=False, allow_blank=True)
     license_number = serializers.CharField(write_only=True, required=False, allow_blank=True)
-
+    profile_picture = serializers.ImageField(
+    write_only=True,
+    required=False,
+    allow_null=True
+     )
     class Meta:
         model = User
         fields = [
             "id", "username", "email", "password", "phone", "role",
-            "location", "district", "business_name", "license_number",
+            "location", "district", "business_name", "license_number", "profile_picture", 
         ]
 
     def validate(self, attrs):
@@ -87,13 +91,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         district = validated_data.pop("district", "")
         business_name = validated_data.pop("business_name", "")
         license_number = validated_data.pop("license_number", "")
-
+        profile_picture = validated_data.pop("profile_picture", None)
         user = User.objects.create_user(password=password, **validated_data)
 
         if role == Roles.DEALER:
             DealerProfile.objects.create(
                 user=user, business_name=business_name, license_number=license_number,
-                location=location, district=district,
+                location=location, district=district, profile_picture=profile_picture,
             )
         else:
             FarmerProfile.objects.create(user=user, location=location, district=district)
