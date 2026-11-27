@@ -121,11 +121,11 @@ export default function Profile() {
           <h2 className="border-b border-gray-300 pb-4">Account</h2>
           <button
             type="button"
-            className="btn secondary"
+            className="btn primary"
             onClick={handleLogout}
           >
             <DoorOpenIcon />
-            Sign out
+            Log out
           </button>
         </div>
 
