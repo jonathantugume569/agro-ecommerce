@@ -55,7 +55,7 @@ class ListingDealerSerializer(serializers.Serializer):
     location = serializers.CharField()
     district = serializers.CharField()
     is_verified = serializers.BooleanField()
-
+    profile_picture = serializers.ImageField(read_only=True)
 
 class ListingSerializer(serializers.ModelSerializer):
     # Read: full product and dealer summaries. Write: send product_id.

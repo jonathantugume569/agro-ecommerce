@@ -41,7 +41,11 @@ class DealerProfile(models.Model):
     is_verified = models.BooleanField(default=False)
     verified_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    profile_picture = models.ImageField(
+        upload_to="dealer_profiles/",
+        null=True,
+        blank=True
+    )
     def __str__(self):
         return self.business_name
 
